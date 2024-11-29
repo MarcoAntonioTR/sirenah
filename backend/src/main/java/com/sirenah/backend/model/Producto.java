@@ -26,6 +26,10 @@ public class Producto {
     private int StockMinimo;
     @Column(name = "stock")
     private int Stock;
+    @Column(name = "cantidad")
+    private int cantidad;
+    @Column(name = "imgUrl")
+    private String imgUrl;
     @Column(name = "idCategoria")
     private int idCategoria;
     @Column(name = "estado")

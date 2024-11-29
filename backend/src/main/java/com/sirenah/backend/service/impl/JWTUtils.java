@@ -23,9 +23,10 @@ public class JWTUtils {
         byte[] keyBytes = Base64.getDecoder().decode(secreteString.getBytes(StandardCharsets.UTF_8));
         this.Key = new SecretKeySpec(keyBytes,"HmacSHA256");
     }
-    public  String generateToken(UserDetails userDetails) {
+    public  String generateToken(UserDetails userDetails, String role) {
         return Jwts.builder()
                 .subject(userDetails.getUsername())
+                .claim("role",role)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(Key)
@@ -42,6 +43,9 @@ public class JWTUtils {
     }
     public String extractUsername (String token){
         return extractClaims(token, Claims::getSubject);
+    }
+    public String extractRole(String token) {
+        return extractClaims(token, claims -> claims.get("role", String.class)); // Extrae el rol
     }
     public <T> T extractClaims(String token, Function<Claims,T> claimsTFunction){
         return claimsTFunction.apply(Jwts.parser().verifyWith(Key).build().parseSignedClaims(token).getPayload());

@@ -3,6 +3,10 @@ import { FaEnvelope, FaLock, FaUser, FaIdCard, FaPhone, FaFacebookF, FaGoogle, F
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import '../../styles/Registro.css';
 import { Link } from 'react-router-dom';
+import { validarNombre, validarApellido, validarEmail, validarDni, validarTelefono, validarFechaNacimiento, validarPassword, validarConfirmPassword } from '../../utils/Validaciones';
+import { AlertaDeExito, AlertaDeError } from '../../utils/Alertas'
+import { useNavigate } from 'react-router-dom';
+import { TOKEN_API_RECIEC } from '../../constants/tokens';
 
 function Registro() {
     const [email, setEmail] = useState('');
@@ -16,87 +20,52 @@ function Registro() {
     const [mostrarPassword, setMostrarPassword] = useState(false);
     const [errores, setErrores] = useState({});
     const [success, setSuccess] = useState('');
+    const navigate = useNavigate();
 
     const manejarRegistro = async (e) => {
         e.preventDefault();
-        const newErrores = {};
 
-        
-        if (nombre.trim() === '') {
-            newErrores.nombre = 'El nombre es obligatorio.';
-        } else if (nombre.length < 2) {
-            newErrores.nombre = 'El nombre debe tener al menos 2 caracteres.';
-        } else if (/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/.test(nombre)) {
-            newErrores.nombre = 'El nombre solo puede contener letras.';
-        }
-
-
-        if (apellido.trim() === '') {
-            newErrores.apellido = 'El apellido es obligatorio.';
-        } else if (apellido.length < 2) {
-            newErrores.apellido = 'El apellido debe tener al menos 2 caracteres.';
-        } else if (/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/.test(apellido)) {
-            newErrores.apellido = 'El apellido solo puede contener letras.';
-        }
-
-
-        if (email.trim() === '') {
-            newErrores.email = 'El correo electrónico es obligatorio.';
-        } else {
-            const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!regexEmail.test(email)) {
-                newErrores.email = 'El correo electrónico no es válido.';
-            }
-        }
-
-
-        if (dni.trim() === '') {
-            newErrores.dni = 'El DNI es obligatorio.';
-        } else if (!/^\d{8}$/.test(dni)) {
-            newErrores.dni = 'El DNI debe tener exactamente 8 dígitos numéricos.';
-        }
-        if (telefono.trim() === '') {
-            newErrores.telefono = 'El número de teléfono es obligatorio.';
-        } else if (!/^\d{9}$/.test(telefono)) {
-            newErrores.telefono = 'El número de teléfono debe tener 9 dígitos.';
-        }
-
-
-        if (fechaNacimiento.trim() === '') {
-            newErrores.fechaNacimiento = 'La fecha de nacimiento es obligatoria.';
-        } else {
-            const today = new Date();
-            const birthDate = new Date(fechaNacimiento);
-            const eighteenYearsAgo = new Date();
-            eighteenYearsAgo.setFullYear(today.getFullYear() - 18);
-            if (birthDate > eighteenYearsAgo) {
-                newErrores.fechaNacimiento = 'Debes tener al menos 18 años para registrarte.';
-            }
-        }
-        
-        if (password.trim() === '') {
-            newErrores.password = 'La contraseña es obligatoria.';
-        } else if (password.length < 5) {
-            newErrores.password = 'La contraseña debe tener al menos 5 caracteres.';
-        } else if (!/[A-Z]/.test(password) || !/\d/.test(password) || !/[!@#$%^&*]/.test(password)) {
-            newErrores.password = 'La contraseña debe incluir al menos una letra mayúscula, un número y un carácter especial.';
-        }
-        if (confirmPassword.trim() === '') {
-            newErrores.confirmPassword = 'La confirmación de la contraseña es obligatoria.';
-        } else if (password !== confirmPassword) {
-            newErrores.confirmPassword = 'Las contraseñas no coinciden.';
-        }
-        if (Object.keys(newErrores).length > 0) {
-            setErrores(newErrores);
+        if (password !== confirmPassword) {
+            setErrores(prev => ({ ...prev, confirmPassword: 'Las contraseñas no coinciden.' }));
             return;
         }
-        if (Object.keys(newErrores).length > 0) {
-            setErrores(newErrores);
+
+        if (Object.values(errores).some(error => error)) return;
+
+
+        try {
+            const response = await fetch('https://apiperu.dev/api/dni', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${TOKEN_API_RECIEC}`,
+                },
+                body: JSON.stringify({ dni })
+            });
+            
+            const data = await response.json();
+            if (nombre.toUpperCase() !== data.data.nombres && apellido.toUpperCase() !== (data.data.apellido_paterno + " " + data.data.apellido_materno)) {
+                setErrores(prev => ({ ...prev, nombre: 'Verificar que el nombre sea correcto.' }));
+                setErrores(prev => ({ ...prev, apellido: 'Verificar que el apellido sea correcto.' }));
+                return;
+            } else if (nombre.toUpperCase() !== data.data.nombres) {
+                setErrores(prev => ({ ...prev, nombre: 'Verificar que el nombre sea correcto.' }));
+                return;
+            } else if (apellido.toUpperCase() !== (data.data.apellido_paterno + " " + data.data.apellido_materno)) {
+                setErrores(prev => ({ ...prev, apellido: 'Verificar que el apellido sea correcto.' }));
+                return;
+            } else if ("No se encontraron registros" == data.message) {
+                setErrores(prev => ({ ...prev, dni: 'No se encontraron registros.' }));
+                return;
+            }
+
+            // eslint-disable-next-line no-unused-vars
+        } catch (error) {
+            setErrores(prev => ({ ...prev, dni: 'No se encontraron registros.' }));
             return;
         }
-        setErrores({});
 
-        
         const body = {
             name: nombre,
             email: email,
@@ -106,21 +75,20 @@ function Registro() {
                 apellido: apellido,
                 dni: dni,
                 telefono: telefono,
-                fecha_nacimiento: fechaNacimiento, 
+                fecha_nacimiento: fechaNacimiento,
             }
         };
+
         try {
             const response = await fetch('http://localhost:9090/auth/signup', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),
             });
             const data = await response.json();
 
             if (data.statuscode === 200) {
-                setSuccess('Registro exitoso. Bienvenido!');
+                AlertaDeExito('¡Bienvenido!', 'Te has registrado correctamente.');
                 setEmail('');
                 setPassword('');
                 setNombre('');
@@ -129,27 +97,41 @@ function Registro() {
                 setTelefono('');
                 setFechaNacimiento('');
                 setConfirmPassword('');
-                setErrores('');
-            } else if (data.statuscode == 409) {
-                setErrores({ global: 'El correo electrónico ya está en uso.' });
-                setSuccess('');
-            } else if (data.statuscode == 410) {
-                setErrores({ global: 'Ya existe un usuario con el mismo DNI.' });
-                setSuccess('');
-            } else if(data.statuscode === 500) {
-                setErrores('Hubo un problema con el servidor. Intenta nuevamente.');
-                setSuccess('');
+                setErrores({});
+            } else if (data.statuscode === 409) {
+                AlertaDeError(
+                    "Error",
+                    "Ya hay un usuario con el email registrado"
+                );
+                return;
+            } else if (data.statuscode === 410) {
+                AlertaDeError(
+                    "Error",
+                    "Ya hay un usuario con el DNI registrado"
+                );
+                return;
             }
+            else if (data.statuscode === 500) {
+                AlertaDeError(
+                    "Error",
+                    "Hubo un problema con el servidor. Intenta nuevamente.'"
+                );
+                return;
+            }
+            setTimeout(() => {
+                navigate('/login');
+            }, 2000);
+            // eslint-disable-next-line no-unused-vars
         } catch (error) {
-            setSuccess('');
             setErrores({ global: 'Hubo un error al registrar. Intenta nuevamente.' });
+            setSuccess('');
         }
     };
+
 
     const alternarVisibilidadPassword = () => {
         setMostrarPassword(!mostrarPassword);
     };
-
     return (
         <div className="contenedor-registro">
             <button className="btn-close" onClick={() => window.location.href = '/'}>
@@ -158,7 +140,7 @@ function Registro() {
             <form onSubmit={manejarRegistro} className="formulario-registro">
                 <h2 className="titulo-registro">¡Crea tu cuenta!</h2>
                 <div className="grupo-input">
-                    <label className="etiqueta">Nombre:</label>
+                    <label className="etiqueta">Nombre Completo:</label>
                     <div className="input-con-icono">
                         <FaUser className="icono" />
                         <input
@@ -167,12 +149,13 @@ function Registro() {
                             onChange={(e) => setNombre(e.target.value)}
                             placeholder="Ingresa tu nombre"
                             className="input-registro"
+                            onBlur={() => validarNombre(nombre, setErrores)}
                         />
                     </div>
                     {errores.nombre && <p className="error-message">{errores.nombre}</p>}
                 </div>
                 <div className="grupo-input">
-                    <label className="etiqueta">Apellido:</label>
+                    <label className="etiqueta">Apellidos Completos:</label>
                     <div className="input-con-icono">
                         <FaUser className="icono" />
                         <input
@@ -181,6 +164,7 @@ function Registro() {
                             onChange={(e) => setApellido(e.target.value)}
                             placeholder="Ingresa tu apellido"
                             className="input-registro"
+                            onBlur={() => validarApellido(apellido, setErrores)}
                         />
                     </div>
                     {errores.apellido && <p className="error-message">{errores.apellido}</p>}
@@ -195,6 +179,7 @@ function Registro() {
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="Ingresa tu correo"
                             className="input-registro"
+                            onBlur={() => validarEmail(email, setErrores)}
                         />
                     </div>
                     {errores.email && <p className="error-message">{errores.email}</p>}
@@ -209,6 +194,7 @@ function Registro() {
                             onChange={(e) => setDni(e.target.value)}
                             placeholder="Ingresa tu DNI"
                             className="input-registro"
+                            onBlur={() => validarDni(dni, setErrores)}
                         />
                     </div>
                     {errores.dni && <p className="error-message">{errores.dni}</p>}
@@ -223,6 +209,7 @@ function Registro() {
                             onChange={(e) => setTelefono(e.target.value)}
                             placeholder="Ingresa tu teléfono"
                             className="input-registro"
+                            onBlur={() => validarTelefono(telefono, setErrores)}
                         />
                     </div>
                     {errores.telefono && <p className="error-message">{errores.telefono}</p>}
@@ -234,6 +221,7 @@ function Registro() {
                         value={fechaNacimiento}
                         onChange={(e) => setFechaNacimiento(e.target.value)}
                         className="input-registro"
+                        onBlur={() => validarFechaNacimiento(fechaNacimiento, setErrores)}
                     />
                     {errores.fechaNacimiento && <p className="error-message">{errores.fechaNacimiento}</p>}
                 </div>
@@ -247,6 +235,7 @@ function Registro() {
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="Ingresa tu contraseña"
                             className="input-registro"
+                            onBlur={() => validarPassword(password, setErrores)}
                         />
                     </div>
                     {errores.password && <p className="error-message">{errores.password}</p>}
@@ -261,6 +250,7 @@ function Registro() {
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             placeholder="Confirma tu contraseña"
                             className="input-registro"
+                            onBlur={() => validarConfirmPassword(password, confirmPassword, setErrores)}
                         />
                     </div>
                     {errores.confirmPassword && <p className="error-message">{errores.confirmPassword}</p>}
@@ -271,7 +261,7 @@ function Registro() {
                 </button>
                 {success && <p className="success-message">{success}</p>}
                 {errores.global && <p className="error-message">{errores.global}</p>}
-                
+
                 <button type="submit" className="boton-registro">Registrarse</button>
                 <p className="parrafo-login">
                     ¿Ya tienes una cuenta? <Link to="/Login">Inicia sesión aquí</Link>
@@ -284,7 +274,7 @@ function Registro() {
                         <button type="button"><FaTwitter /></button>
                     </div>
                 </div>
-                
+
             </form>
         </div>
     );

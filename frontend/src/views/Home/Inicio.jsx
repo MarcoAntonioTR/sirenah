@@ -4,8 +4,8 @@ import Header from "../../components/layout/Header";
 import "../../styles/Inicio.css";
 
 const Inicio = () => {
-  // Estado para el índice de la imagen actual
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   // Array de imágenes para el carrusel
   const images = [
@@ -36,8 +36,8 @@ const Inicio = () => {
   };
 
   return (
-    <div>
-      <Header />
+    <div className={isDarkMode ? 'dark-mode' : ''}> {/* Aplica la clase para el dark mode */}
+      <Header isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
       <main>
         {/* Sección del Carrusel */}
         <section className="carousel">
@@ -116,7 +116,7 @@ const Inicio = () => {
           </div>
         </section>
       </main>
-      <Footer />
+      <Footer isDarkMode={isDarkMode} />
     </div>
   );
 };

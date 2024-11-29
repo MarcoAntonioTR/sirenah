@@ -1,6 +1,6 @@
-import { FaFacebook, FaTwitter, FaInstagram, FaMapMarkerAlt, FaPhone, FaEnvelope, FaLocationArrow } from 'react-icons/fa';
+import { FaFacebook, FaInstagram, FaMapMarkerAlt, FaPhone, FaEnvelope } from 'react-icons/fa';
 import '../../styles/Footer.css';
-import { Link } from 'react-router-dom';
+
 import PropTypes from 'prop-types';
 
 const Footer = ({ isDarkMode }) => {

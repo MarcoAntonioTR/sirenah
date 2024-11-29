@@ -3,13 +3,16 @@ import { FaEnvelope, FaLock, FaFacebookF, FaGoogle, FaTwitter, FaTimes } from 'r
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import '../../styles/Login.css';
 import { Link } from 'react-router-dom';
-
-export default function Component() {
+import {jwtDecode} from 'jwt-decode'
+import { AlertaDeExito } from '../../utils/Alertas';
+import {useNavigate} from 'react-router-dom'
+export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [mostrarPassword, setMostrarPassword] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const navigate = useNavigate();
 
     const manejarEnvio = async (e) => {
         e.preventDefault();
@@ -37,8 +40,28 @@ export default function Component() {
             const data = await response.json(); 
             
             if (data.statuscode === 200) {
-                setSuccess('¡Inicio de sesión exitoso!');
+                localStorage.setItem('token',data.token);
+                const role = jwtDecode(data.token).role;
+
+                AlertaDeExito('!Bienvenido!', 'Has iniciado sesión correctamente.');
                 setError('');
+                if (role === 'ADMIN') {
+                    setTimeout(() => {
+                        navigate('/MenuAdmin/Perfil');
+                        window.location.reload();
+                    }, 2000);
+                } else if (role === 'EMPLEADO') {
+                    setTimeout(() => {
+                        navigate('/MenuAdmin/Perfil');
+                        window.location.reload();
+                    }, 2000);
+                } else if (role === 'USER') {
+                    setTimeout(() => {
+                        navigate('/MenuCliente/Perfil');
+                        window.location.reload();
+                    }, 2000);
+                }
+                
             } else if (data.statuscode === 401) {
                 setError('Credenciales incorrectas. Por favor, verifica tu email y contraseña.');
                 setSuccess('');
@@ -52,6 +75,7 @@ export default function Component() {
                 setError('Error en el inicio de sesión. Intenta nuevamente.');
                 setSuccess('');
             }
+        // eslint-disable-next-line no-unused-vars
         } catch (error) {
             setError('Error en la conexión con el servidor. Intenta nuevamente.');
             setSuccess('');

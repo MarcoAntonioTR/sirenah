@@ -19,14 +19,32 @@ public class OurUsers implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(name = "email", length = 255)
     private String email;
+
+    @Column(name = "password", length = 255)
     private String password;
+
+    @Column(name = "role", length = 50)
     private String role;
+
+    @Column(name = "nombre", length = 100)
     private String nombre;
+
+    @Column(name = "apellido", length = 100)
     private String apellido;
+
+    @Column(name = "dni", length = 20)
     private String dni;
+
+    @Column(name = "telefono", length = 20)
     private String telefono;
+
+    @Column(name = "fecha_nacimiento")
     private LocalDate fecha_nacimiento;
+
+    @Column(name = "estado")
     private boolean estado = true;
 
     @Override
