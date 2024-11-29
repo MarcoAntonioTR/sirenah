@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.function.Function;
 
 @Component
+@Service
 public class JWTUtils {
     private SecretKey Key;
     private static final long EXPIRATION_TIME = 86400000; //24hrs
