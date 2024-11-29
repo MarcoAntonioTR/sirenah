@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = 'http://localhost:9090/adminempleado/Productos';
+const BASE_URL = 'http://localhost:8080/adminempleado/Productos';
 const token = localStorage.getItem('token'); 
 
 

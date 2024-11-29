@@ -38,7 +38,7 @@ function ProductList() {
       const decodedToken = jwtDecode(token);
       const email = decodedToken.sub;
       const response = await axios.get(
-        `http://localhost:9090/todosroles/datos/${email}`
+        `http://localhost:8080/todosroles/datos/${email}`
       );
       setUsuarioId(response.data.id);
     } catch (error) {
@@ -51,7 +51,7 @@ function ProductList() {
     const obtenerProductos = async () => {
       try {
         const respuesta = await fetch(
-          "http://localhost:9090/public/Productos/Listar"
+          "http://localhost:8080/public/Productos/Listar"
         );
         const datos = await respuesta.json();
         setProductos(datos);
@@ -65,7 +65,7 @@ function ProductList() {
     const obtenerCategorias = async () => {
       try {
         const respuesta = await fetch(
-          "http://localhost:9090/public/Categorias/Listar"
+          "http://localhost:8080/public/Categorias/Listar"
         );
         const datos = await respuesta.json();
         setCategorias(datos);
@@ -98,7 +98,7 @@ function ProductList() {
 
       try {
         const carritoResponse = await fetch(
-          `http://localhost:9090/todosroles/carrito/obtener/${usuarioId}`,
+          `http://localhost:8080/todosroles/carrito/obtener/${usuarioId}`,
           {
             method: "GET",
             headers: {
@@ -109,7 +109,7 @@ function ProductList() {
         );
         if (403 == carritoResponse.status) {
           const carritoCreadoResponse = await fetch(
-            `http://localhost:9090/todosroles/carrito/crear/${usuarioId}`,
+            `http://localhost:8080/todosroles/carrito/crear/${usuarioId}`,
             {
               method: "POST",
               headers: {
@@ -131,7 +131,7 @@ function ProductList() {
       // 4. Agregar producto al carrito
       try {
         const agregarProductoResponse = await fetch(
-          `http://localhost:9090/todosroles/carrito/${carrito.idCarrito}/detalle?idProducto=${producto.idProducto}&cantidad=${1}&precioUnitario=${producto.precio}`,
+          `http://localhost:8080/todosroles/carrito/${carrito.idCarrito}/detalle?idProducto=${producto.idProducto}&cantidad=${1}&precioUnitario=${producto.precio}`,
           {
             method: "POST",
             headers: {

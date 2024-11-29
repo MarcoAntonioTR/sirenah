@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = 'http://localhost:9090/auth';
+const BASE_URL = 'http://localhost:8080/auth';
 
 axios.interceptors.request.use(
     (config) => {

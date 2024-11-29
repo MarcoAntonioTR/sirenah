@@ -52,7 +52,7 @@ const Header = () => {
                 return;
             }
             // Obtener el carrito
-            const idCarrito = await fetch(`http://localhost:9090/todosroles/carrito/obtener/${userId}`, {
+            const idCarrito = await fetch(`http://localhost:8080/todosroles/carrito/obtener/${userId}`, {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -87,7 +87,7 @@ const Header = () => {
 
             // Obtener carrito
             const idCarrito = await fetch(
-                `http://localhost:9090/todosroles/carrito/obtener/${userId}`,
+                `http://localhost:8080/todosroles/carrito/obtener/${userId}`,
                 {
                     method: "GET",
                     headers: {
@@ -104,7 +104,7 @@ const Header = () => {
             const carritoData = await idCarrito.json();
 
 
-            const response = await fetch(`http://localhost:9090/todosroles/carrito/${carritoData.idCarrito}/detalle/aumentar?idProducto=${idProducto}`, {
+            const response = await fetch(`http://localhost:8080/todosroles/carrito/${carritoData.idCarrito}/detalle/aumentar?idProducto=${idProducto}`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -138,7 +138,7 @@ const Header = () => {
 
             // Obtener carrito
             const idCarrito = await fetch(
-                `http://localhost:9090/todosroles/carrito/obtener/${userId}`,
+                `http://localhost:8080/todosroles/carrito/obtener/${userId}`,
                 {
                     method: "GET",
                     headers: {
@@ -156,7 +156,7 @@ const Header = () => {
 
 
             const response = await fetch(
-                `http://localhost:9090/todosroles/carrito/${carritoData.idCarrito}/detalle/${idCarritoDetalle}`,
+                `http://localhost:8080/todosroles/carrito/${carritoData.idCarrito}/detalle/${idCarritoDetalle}`,
                 {
                     method: "DELETE",
                     headers: {
@@ -191,7 +191,7 @@ const Header = () => {
 
             // Obtener carrito
             const idCarrito = await fetch(
-                `http://localhost:9090/todosroles/carrito/obtener/${userId}`,
+                `http://localhost:8080/todosroles/carrito/obtener/${userId}`,
                 {
                     method: "GET",
                     headers: {
@@ -209,7 +209,7 @@ const Header = () => {
 
 
             const response = await fetch(
-                `http://localhost:9090/todosroles/carrito/${carritoData.idCarrito}/detalle/${idCarritoDetalle}`,
+                `http://localhost:8080/todosroles/carrito/${carritoData.idCarrito}/detalle/${idCarritoDetalle}`,
                 {
                     method: "DELETE",
                     headers: {
@@ -239,7 +239,7 @@ const Header = () => {
 
             // Obtener carrito
             const idCarrito = await fetch(
-                `http://localhost:9090/todosroles/carrito/obtener/${userId}`,
+                `http://localhost:8080/todosroles/carrito/obtener/${userId}`,
                 {
                     method: "GET",
                     headers: {
@@ -266,7 +266,7 @@ const Header = () => {
             if (producto.cantidad > 1) {
 
                 const response = await fetch(
-                    `http://localhost:9090/todosroles/carrito/${carritoData.idCarrito}/detalle/disminuir?idProducto=${idProducto}`,
+                    `http://localhost:8080/todosroles/carrito/${carritoData.idCarrito}/detalle/disminuir?idProducto=${idProducto}`,
                     {
                         method: "POST",
                         headers: {
@@ -306,7 +306,7 @@ const Header = () => {
             const email = decodedToken.sub;
 
             const response = await axios.get(
-                `http://localhost:9090/todosroles/datos/${email}`,
+                `http://localhost:8080/todosroles/datos/${email}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -336,7 +336,7 @@ const Header = () => {
 
                 // Obtener carrito
                 const response = await fetch(
-                    `http://localhost:9090/todosroles/carrito/obtener/${userId}`,
+                    `http://localhost:8080/todosroles/carrito/obtener/${userId}`,
                     {
                         method: "GET",
                         headers: {
@@ -358,7 +358,7 @@ const Header = () => {
                     detallesCarrito.map(async (item) => {
                         try {
                             const productoResponse = await fetch(
-                                `http://localhost:9090/todosroles/Productos/Buscar/${item.idProducto}`,
+                                `http://localhost:8080/todosroles/Productos/Buscar/${item.idProducto}`,
                                 {
                                     method: "GET",
                                     headers: {

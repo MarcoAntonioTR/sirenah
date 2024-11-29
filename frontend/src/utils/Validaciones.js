@@ -34,7 +34,7 @@ export const validarEmail = async (email,id, setErrores) => {
             setErrores((prev) => ({ ...prev, email: 'El correo electrónico no es válido.' }));
         } else {
             try {
-                const response = await fetch("http://localhost:9090/auth/VerificarEmail", {
+                const response = await fetch("http://localhost:8080/auth/VerificarEmail", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -68,7 +68,7 @@ export const validarDni = async (dni,id, setErrores) => {
         setErrores((prev) => ({ ...prev, dni: 'El DNI debe tener exactamente 8 dígitos numéricos.' }));
     } else {
         try {
-            const response = await fetch("http://localhost:9090/auth/VerificarDNI", {
+            const response = await fetch("http://localhost:8080/auth/VerificarDNI", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
